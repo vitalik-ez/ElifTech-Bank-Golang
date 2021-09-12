@@ -1,0 +1,13 @@
+<!--bank.html-->
+{{ template "header.html" .}}
+
+<!--Display the title of the article-->
+<h1>{{.payload.Name}}</h1>
+
+<!--Display the content of the article-->
+<p>Interest rate: {{.payload.InterestRate}}</p>
+<p>Maximum loan: {{.payload.MaximumLoan}}</p>
+<p>Minimum down payment: {{.payload.MinimumDownPayment}}</p>
+<p>Loan term in months: {{.payload.LoanTermInMonths}}</p>
+
+{{ template "footer.html" .}}

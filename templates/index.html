@@ -1,0 +1,14 @@
+{{ template "header.html" .}}
+
+  {{range .payload }}
+
+    <a href="/bank/view/{{.Id}}">
+      <h2>{{.Name}}</h2>
+    </a>
+
+    <p>Interest rate: {{.InterestRate}}</p>
+
+  {{end}}
+
+
+{{ template "footer.html" .}}
