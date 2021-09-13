@@ -20,6 +20,13 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	router.GET("/", h.showIndexPage)
 	router.GET("/bank/view/:bank_id", h.getBank)
+
+	router.GET("/bank/update/:bank_id/", h.updateBank)
+	router.POST("/bank/update/:bank_id/", h.updateBank)
+
+	router.DELETE("/bank/delete/:bank_id/", h.deleteBank)
+
+	router.GET("/bank/", h.createBank)
 	router.POST("/bank/", h.createBank)
 
 	return router

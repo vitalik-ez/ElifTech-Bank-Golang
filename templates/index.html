@@ -1,5 +1,7 @@
 {{ template "header.html" .}}
-
+  {{if .message}}
+    <h1>{{ .message }}</h1>
+  {{end}}
   {{range .payload }}
 
     <a href="/bank/view/{{.Id}}">
@@ -7,8 +9,6 @@
     </a>
 
     <p>Interest rate: {{.InterestRate}}</p>
-
-  {{end}}
-
+  {{ end }}
 
 {{ template "footer.html" .}}

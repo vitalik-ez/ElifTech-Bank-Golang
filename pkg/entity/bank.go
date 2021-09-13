@@ -2,33 +2,56 @@ package entity
 
 import (
 	"errors"
-	"fmt"
 )
 
-type bank struct {
+type Bank struct {
 	Id                 int     `json:"id"`
-	Name               string  `json:"name"`
-	InterestRate       float32 `json:"interestRate"`
-	MaximumLoan        float32 `json:"maximumLoan"`
-	MinimumDownPayment float32
-	LoanTermInMonths   uint
+	Name               string  `form:"Name"`
+	InterestRate       float32 `form:"InterestRate" `
+	MaximumLoan        float32 `form:"MaximumLoan"`
+	MinimumDownPayment float32 `form:"MinimumDownPayment"`
+	LoanTermInMonths   uint    `form:"LoanTermInMonths"`
 }
 
-var bankList = []bank{
+var bankList = []Bank{
 	{Id: 1, Name: "Oshadbank", InterestRate: 66.65, MaximumLoan: 159750, MinimumDownPayment: 20, LoanTermInMonths: 10},
 	{Id: 2, Name: "Privat-bank", InterestRate: 89.96, MaximumLoan: 255620, MinimumDownPayment: 15, LoanTermInMonths: 15},
 }
 
-func GetAllBanks() []bank {
-	return bankList
+func GetAllBanks() *[]Bank {
+	return &bankList
 }
 
-func GetBankByID(id int) (*bank, error) {
-	for _, a := range bankList {
-		fmt.Println("asdas")
-		if a.Id == id {
-			return &a, nil
+func AddBank(add *Bank) {
+	bankList = append(bankList, *add)
+}
+
+func UpdateBank(bankId int, updateBank *Bank) {
+	for i, bank := range bankList {
+		if bankId == bank.Id {
+			bankList[i].Name = updateBank.Name
+			bankList[i].InterestRate = updateBank.InterestRate
+			bankList[i].MaximumLoan = updateBank.MaximumLoan
+			bankList[i].MinimumDownPayment = updateBank.MinimumDownPayment
+			bankList[i].LoanTermInMonths = updateBank.LoanTermInMonths
+			break
+		}
+	}
+}
+
+func GetBankByID(id int) (*Bank, error) {
+	for _, bank := range bankList {
+		if bank.Id == id {
+			return &bank, nil
 		}
 	}
 	return nil, errors.New("Bank not found")
+}
+
+func DeleteBank(id int) string {
+	for index, bank := range bankList {
+		if bank.Id == id {
+			bankList = append(bankList[:index], bankList[index+1:]...)
+		}
+	}
 }
