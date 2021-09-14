@@ -24,10 +24,13 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router.GET("/bank/update/:bank_id/", h.updateBank)
 	router.POST("/bank/update/:bank_id/", h.updateBank)
 
-	router.DELETE("/bank/delete/:bank_id/", h.deleteBank)
+	router.GET("/bank/delete/:bank_id/", h.deleteBank)
 
 	router.GET("/bank/", h.createBank)
 	router.POST("/bank/", h.createBank)
+
+	router.GET("/mortgage-calculator/", h.MortgageCalculator)
+	router.POST("/mortgage-calculator/", h.MortgageCalculator)
 
 	return router
 }

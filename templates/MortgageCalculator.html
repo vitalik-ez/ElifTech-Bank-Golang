@@ -1,0 +1,25 @@
+{{ template "header.html" .}}
+<!-- forms.html -->
+    <h1>Mortgage calculator</h1>
+    {{if .message}}
+        <h1>{{ .message }}</h1>
+    {{end}}
+    <form method="POST">
+        <label>Initial loan (example: $280.000)</label><br />
+        <input type="number" step="0.01" name="InitialLoan"  min="0" required><br />
+        <label>Down payment (example: $20.000)</label><br />
+        <input type="number" step="0.01" name="DownPayment" min="0" required><br />
+        
+        <label>Bank (select from dropdown):</label><br/>
+        <select name="bank" id="banks">
+            {{range .payload }}
+                <option value="{{.Id}}">{{.Name}}</option>
+            {{ end }}
+        </select>
+
+        <br/><br/>
+        <input type="submit" value="Сalculate">
+
+    </form>
+
+{{ template "footer.html" .}}

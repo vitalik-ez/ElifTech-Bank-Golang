@@ -7,9 +7,9 @@ import (
 type Bank struct {
 	Id                 int     `json:"id"`
 	Name               string  `form:"Name"`
-	InterestRate       float32 `form:"InterestRate" `
-	MaximumLoan        float32 `form:"MaximumLoan"`
-	MinimumDownPayment float32 `form:"MinimumDownPayment"`
+	InterestRate       float64 `form:"InterestRate" `
+	MaximumLoan        float64 `form:"MaximumLoan"`
+	MinimumDownPayment float64 `form:"MinimumDownPayment"`
 	LoanTermInMonths   uint    `form:"LoanTermInMonths"`
 }
 
@@ -49,9 +49,12 @@ func GetBankByID(id int) (*Bank, error) {
 }
 
 func DeleteBank(id int) string {
+	var name string
 	for index, bank := range bankList {
 		if bank.Id == id {
+			name = bank.Name
 			bankList = append(bankList[:index], bankList[index+1:]...)
 		}
 	}
+	return name
 }
