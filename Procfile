@@ -1,1 +1,1 @@
-web: cmd/bank-service/main
+web: cmd/bank-service/
