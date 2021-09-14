@@ -5,10 +5,6 @@ import (
 	"fmt"
 )
 
-const (
-	bankTable = "banks"
-)
-
 type Config struct {
 	Host     string
 	Port     string

@@ -2,6 +2,8 @@
   {{if .message}}
     <h1>{{ .message }}</h1>
   {{end}}
+
+  {{ if .payload }}
   {{range .payload }}
 
     <a href="/bank/view/{{.Id}}">
@@ -9,6 +11,9 @@
     </a>
 
     <p>Interest rate: {{.InterestRate}}</p>
+  {{ end }}
+  {{ else }}
+    <h2>There are no banks yet.</h2>
   {{ end }}
 
 {{ template "footer.html" .}}

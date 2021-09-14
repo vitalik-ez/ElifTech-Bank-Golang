@@ -11,20 +11,31 @@ import (
 )
 
 func (h *Handler) showIndexPage(c *gin.Context) {
-	banks := entity.GetAllBanks()
-	c.HTML(
-		http.StatusOK,
-		"index.html",
-		gin.H{
-			"title":   "Home Page",
-			"payload": banks,
-		},
-	)
+	banks, err := h.services.GetAllBanks()
+	if err != nil {
+		c.HTML(
+			http.StatusInternalServerError,
+			"index.html",
+			gin.H{
+				"title":   "Home Page",
+				"message": "Server error. Sorry)",
+			},
+		)
+	} else {
+		c.HTML(
+			http.StatusOK,
+			"index.html",
+			gin.H{
+				"title":   "Home Page",
+				"payload": banks,
+			},
+		)
+	}
 }
 
 func (h *Handler) getBank(c *gin.Context) {
 	if bankId, err := strconv.Atoi(c.Param("bank_id")); err == nil {
-		if bank, err := entity.GetBankByID(bankId); err == nil {
+		if bank, err := h.services.GetBankByID(bankId); err == nil {
 			c.HTML(
 				http.StatusOK,
 				"bank.html",
@@ -42,7 +53,6 @@ func (h *Handler) getBank(c *gin.Context) {
 }
 
 func (h *Handler) createBank(c *gin.Context) {
-	banks := entity.GetAllBanks()
 	if c.Request.Method != http.MethodPost {
 		c.HTML(
 			http.StatusOK,
@@ -51,7 +61,6 @@ func (h *Handler) createBank(c *gin.Context) {
 				"title": "Create bank",
 			},
 		)
-		return
 	} else {
 		bankDetails := entity.Bank{}
 		if c.Bind(&bankDetails) != nil {
@@ -61,27 +70,48 @@ func (h *Handler) createBank(c *gin.Context) {
 				gin.H{
 					"title":   "Home page",
 					"message": "Bank wasn't created. Server Error !!!",
-					"payload": banks,
 				},
 			)
 		} else {
-			entity.AddBank(&bankDetails)
-			c.HTML(
-				http.StatusOK,
-				"index.html",
-				gin.H{
-					"title":   "Home page",
-					"message": "Bank success created !!!",
-					"payload": banks,
-				},
-			)
+			err := h.services.CreateBank(bankDetails)
+			if err != nil {
+				c.HTML(
+					http.StatusInternalServerError,
+					"index.html",
+					gin.H{
+						"title":   "Home Page",
+						"message": "Server error. Sorry)",
+					},
+				)
+			} else {
+				banks, err := h.services.GetAllBanks()
+				if err != nil {
+					c.HTML(
+						http.StatusInternalServerError,
+						"index.html",
+						gin.H{
+							"title":   "Home Page",
+							"message": "Server error. Sorry)",
+						},
+					)
+				}
+				c.HTML(
+					http.StatusOK,
+					"index.html",
+					gin.H{
+						"title":   "Home page",
+						"message": "Bank success created !!!",
+						"payload": banks,
+					},
+				)
+			}
 		}
 	}
 }
 
 func (h *Handler) updateBank(c *gin.Context) {
 	if bankId, err := strconv.Atoi(c.Param("bank_id")); err == nil {
-		if bank, err := entity.GetBankByID(bankId); err == nil {
+		if bank, err := h.services.GetBankByID(bankId); err == nil {
 			if c.Request.Method != http.MethodPost {
 				c.HTML(
 					http.StatusOK,
@@ -94,8 +124,18 @@ func (h *Handler) updateBank(c *gin.Context) {
 			} else {
 				bankDetails := entity.Bank{}
 				if c.Bind(&bankDetails) == nil {
-					entity.UpdateBank(bankId, &bankDetails)
-					banks := entity.GetAllBanks()
+					_ = h.services.UpdateBank(bankId, &bankDetails)
+					banks, err := h.services.GetAllBanks()
+					if err != nil {
+						c.HTML(
+							http.StatusInternalServerError,
+							"index.html",
+							gin.H{
+								"title":   "Home Page",
+								"message": "Server error. Sorry)",
+							},
+						)
+					}
 					c.HTML(
 						http.StatusOK,
 						"index.html",
@@ -116,9 +156,19 @@ func (h *Handler) updateBank(c *gin.Context) {
 }
 
 func (h *Handler) deleteBank(c *gin.Context) {
-	banks := entity.GetAllBanks()
 	if bankId, err := strconv.Atoi(c.Param("bank_id")); err == nil {
-		bankName := entity.DeleteBank(bankId)
+		bankName, _ := h.services.DeleteBank(bankId)
+		banks, err := h.services.GetAllBanks()
+		if err != nil {
+			c.HTML(
+				http.StatusInternalServerError,
+				"index.html",
+				gin.H{
+					"title":   "Home Page",
+					"message": "Server error. Sorry)",
+				},
+			)
+		}
 		c.HTML(
 			http.StatusOK,
 			"index.html",
@@ -140,7 +190,17 @@ type inputData struct {
 }
 
 func (h *Handler) MortgageCalculator(c *gin.Context) {
-	banks := entity.GetAllBanks()
+	banks, err := h.services.GetAllBanks()
+	if err != nil {
+		c.HTML(
+			http.StatusInternalServerError,
+			"index.html",
+			gin.H{
+				"title":   "Home Page",
+				"message": "Server error. Sorry)",
+			},
+		)
+	}
 	if c.Request.Method != http.MethodPost {
 		c.HTML(
 			http.StatusOK,
@@ -163,7 +223,7 @@ func (h *Handler) MortgageCalculator(c *gin.Context) {
 				},
 			)
 		} else {
-			bank, err := entity.GetBankByID(mortgageDetails.BankId)
+			bank, err := h.services.GetBankByID(mortgageDetails.BankId)
 			if bank.MaximumLoan >= mortgageDetails.InitialLoan && bank.MinimumDownPayment <= mortgageDetails.DownPayment && err == nil {
 				mortgage := (bank.InterestRate / 12) * math.Pow((1+bank.InterestRate/12), float64(bank.LoanTermInMonths))
 				mortgage = mortgage / (math.Pow((1+bank.InterestRate/12), float64(bank.LoanTermInMonths)) - float64(1))
