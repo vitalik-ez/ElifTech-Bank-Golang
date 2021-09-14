@@ -1,1 +1,1 @@
-web: cmd/bank-service/
+web: bin/elifbankgolang/
