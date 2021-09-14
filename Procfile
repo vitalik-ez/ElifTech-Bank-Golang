@@ -1,1 +1,1 @@
-web: bin/elifbankgolang/
+web: bin/main
